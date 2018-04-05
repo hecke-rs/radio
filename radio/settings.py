@@ -1,8 +1,12 @@
+import os
+
 class Config:
-	DEBUG = False
+    DEBUG = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "postgres://localhost/heckersradio")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class ProdConfig(Config):
-	pass
+    pass
 
 class DevConfig(Config):
-	DEBUG = True
+    DEBUG = True
