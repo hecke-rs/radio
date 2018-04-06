@@ -9,6 +9,7 @@ def create_app(config_object):
 
     register_extensions(app)
     register_exceptions(app)
+    register_blueprints(app)
 
     return app
 
@@ -36,3 +37,7 @@ def register_exceptions(app):
             messages = ['Invalid request']
 
         return jsonify({'messages': messages}), 422
+
+def register_blueprints(app):
+    from .auth.routes import bp as auth
+    app.register_blueprint(auth)
