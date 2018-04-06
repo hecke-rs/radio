@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 
 # this is an 'app factory'.
 # you might want to check out [http://flask.pocoo.org/docs/0.12/patterns/appfactories/]
@@ -26,3 +26,13 @@ def register_exceptions(app):
         response = error.to_json()
         response.status_code = error.status_code
         return response
+
+    @app.errorhandler(422)
+    def handle_unprocessable_entity(err):
+        exc = getattr(err, 'exc')
+        if exc:
+            messages = exc.messages
+        else:
+            messages = ['Invalid request']
+
+        return jsonify({'messages': messages}), 422
