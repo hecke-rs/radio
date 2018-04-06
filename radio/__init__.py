@@ -12,6 +12,8 @@ def create_app(config_object):
     return app
 
 def register_extensions(app):
-    from .models import db, migrate
+    from .extensions import db, migrate, jwt
+
     db.init_app(app)
     migrate.init_app(app)
+    jwt.init_app(app)
