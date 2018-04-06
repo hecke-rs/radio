@@ -8,6 +8,7 @@ def create_app(config_object):
     app.config.from_object(config_object)
 
     register_extensions(app)
+    register_exceptions(app)
 
     return app
 
@@ -17,3 +18,11 @@ def register_extensions(app):
     db.init_app(app)
     migrate.init_app(app)
     jwt.init_app(app)
+
+def register_exceptions(app):
+    from .exceptions import APIError
+    @app.errorhandler(APIError)
+    def apierror_handler(error):
+        response = error.to_json()
+        response.status_code = error.status_code
+        return response
