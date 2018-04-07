@@ -14,8 +14,8 @@ bp = Blueprint('auth', __name__)
 @bp.route('/api/auth/users', methods=['POST'])
 @use_kwargs(UserSchema())
 @serializes_to(UserSchema())
-def register_user(**kwargs):
-    user = User(**kwargs)
+def register_user(username, password, **kwargs):
+    user = User(username, password)
     try:
         db.session.add(user)
         db.session.commit()
