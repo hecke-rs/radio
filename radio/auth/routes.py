@@ -1,6 +1,7 @@
 from flask import Blueprint
 from sqlalchemy.exc import IntegrityError
 from webargs.flaskparser import use_kwargs
+from flask_jwt_extended import jwt_required, current_user
 
 from .models import User
 from .serde import UserSchema
@@ -33,3 +34,9 @@ def signin_user(username, password):
         return user
     else:
         raise APIError.user_not_found()
+
+@bp.route('/api/auth/user', methods=['GET'])
+@serializes_to(UserSchema())
+@jwt_required
+def get_user():
+    return current_user
