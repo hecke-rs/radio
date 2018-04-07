@@ -1,38 +1,66 @@
 module Main exposing (main)
+
 import Html exposing (..)
+import Navigation exposing (Location)
+import Route exposing (Route)
+
 
 main =
-  Html.program
-    { init = init
-    , view = view
-    , update = update
-    , subscriptions = subscriptions
-    }
+    Navigation.program (RouteTo << Route.fromLocation)
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }
 
----- init ----
-init : (Model, Cmd Msg)
-init = (Model 2, Cmd.none)
+
 
 ---- model ----
-type alias Model = {
-  x: Int
-}
+
+
+type Page
+    = Root
+    | Login
+
+
+type alias Model =
+    { page : Page
+    }
+
+
+init : Location -> ( Model, Cmd Msg )
+init _ =
+    ( Model Root, Cmd.none )
+
+
 
 ---- update ----
-type Msg
-  = Hnng
 
-update : Msg -> Model -> (Model, Cmd Msg)
+
+type Msg
+    = RouteTo (Maybe Route)
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-  case msg of
-    Hnng -> (model, Cmd.none)
+    case msg of
+        RouteTo _ ->
+            ( model, Cmd.none )
+
+
 
 ---- subscriptions ----
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+    Sub.none
+
+
 
 ---- view ----
+
+
 view : Model -> Html Msg
 view model =
-  div [] [ text "hnng" ]
+    div [] [ text "hnng" ]
