@@ -28,7 +28,7 @@ def register_user(**kwargs):
 @bp.route('/api/auth/signin', methods=['POST'])
 @use_kwargs(UserSchema())
 @serializes_to(UserSchema())
-def signin_user(username, password):
+def signin_user(username, password, **kwargs):
     user = User.query.filter_by(username=username).first()
     if user is not None and user.check_password(password):
         return user
