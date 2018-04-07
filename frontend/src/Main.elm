@@ -1,5 +1,6 @@
 module Main exposing (main)
 
+import Data.Session exposing (Session)
 import Html exposing (..)
 import Navigation exposing (Location)
 import Route exposing (Route)
@@ -25,12 +26,18 @@ type Page
 
 type alias Model =
     { page : Page
+    , session : Session
     }
+
+
+initialPage : Page
+initialPage =
+    Root
 
 
 init : Location -> ( Model, Cmd Msg )
 init _ =
-    ( Model Root, Cmd.none )
+    ( Model initialPage { user = Nothing }, Cmd.none )
 
 
 
