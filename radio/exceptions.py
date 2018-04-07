@@ -18,3 +18,7 @@ class APIError(Exception):
     @classmethod
     def user_already_registered(cls):
         return cls("User already registered", status_code=422)
+
+    @classmethod
+    def user_not_found(cls):
+        return cls("User not found", status_code=404)

@@ -1,5 +1,6 @@
 from passlib.context import CryptContext
-from ..extensions import db
+from flask_jwt_extended import create_access_token
+from ..extensions import db, jwt
 
 hash_ctx = CryptContext(schemes=['argon2'])
 
@@ -17,5 +18,12 @@ class User(db.Model):
         return f'<User {self.id}: {self.username!r}>'
 
     def check_password(self, password: str) -> bool:
-        hash_ctx.verify(password, self.password)
+        return hash_ctx.verify(password, self.password)
 
+    @property
+    def token(self):
+        return create_access_token(identity=self)
+
+@jwt.user_identity_loader
+def user_identity_lookup(user):
+    return user.username
