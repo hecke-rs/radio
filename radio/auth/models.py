@@ -35,4 +35,4 @@ def user_loader_error(identity):
 
 @jwt.user_loader_callback_loader
 def user_loader_callback(identity):
-    return User.query.filter_by(username=username).first()
+    return User.query.filter_by(username=identity).first()
