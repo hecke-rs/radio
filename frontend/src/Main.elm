@@ -28,7 +28,7 @@ main =
 type Page
     = Blank
     | Home
-    | Login
+    | Signin
     | NotFound -- essentially our 404 page
 
 
@@ -72,8 +72,8 @@ the new state plus any commands we wish to dispatch.
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        RouteTo _ ->
-            ( model, Cmd.none )
+        RouteTo route ->
+            routeTo route model
 
 
 routeTo : Maybe Route -> Model -> ( Model, Cmd Msg )
@@ -82,8 +82,11 @@ routeTo route model =
         Nothing ->
             { model | page = NotFound } => Cmd.none
 
-        Just _ ->
-            model => Cmd.none
+        Just Route.Root ->
+            { model | page = Home } => Cmd.none
+
+        Just Route.Signin ->
+            { model | page = Signin } => Cmd.none
 
 
 
@@ -103,4 +106,21 @@ subscriptions model =
 -}
 view : Model -> Html Msg
 view model =
-    div [] [ text "hnng" ]
+    viewPage model.session model.page
+
+
+viewPage : Session -> Page -> Html Msg
+viewPage session page =
+    case page of
+        Blank ->
+            -- for the initial page load
+            Html.text ""
+
+        Home ->
+            Html.text "hrrrnrngh"
+
+        NotFound ->
+            Html.text "we did a wittle fucko boingo"
+
+        Signin ->
+            Html.text "hrrng sign in"
