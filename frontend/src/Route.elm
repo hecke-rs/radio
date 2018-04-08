@@ -1,5 +1,7 @@
 module Route exposing (Route(..), fromLocation)
 
+import Html exposing (Attribute)
+import Html.Attributes as Attr
 import Navigation exposing (Location)
 import UrlParser as Url exposing ((</>), s, top)
 
@@ -20,3 +22,22 @@ route =
 fromLocation : Location -> Maybe Route
 fromLocation =
     Url.parseHash route
+
+
+asString : Route -> String
+asString page =
+    let
+        components =
+            case page of
+                Root ->
+                    []
+
+                Signin ->
+                    [ "signin" ]
+    in
+    "/" ++ String.join "/" components
+
+
+href : Route -> Attribute msg
+href route =
+    Attr.href ("#" ++ asString route)
