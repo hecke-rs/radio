@@ -1,3 +1,11 @@
+* {box-sizing: border-box;}
+
 body {
   background: url(../assets/bg0.jpg) no-repeat center center / cover fixed;
+  font: 1em $body_font;
+  color: $text_color;
+}
+
+button, input[type=submit] {
+    font-family: $action_font !important;
 }

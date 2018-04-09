@@ -1,4 +1,12 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway|Roboto');
+$header_font: 'Raleway', sans-serif !default;
+$action_font: 'Raleway', sans-serif !default;
+$body_font: 'Roboto', sans-serif !default;
+$text_color: #fefefe;
+
 @import 'base';
 @import 'normalize';
+
+@import 'components/buttons';
 
 @import 'pages/login';

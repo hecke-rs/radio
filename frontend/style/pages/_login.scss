@@ -3,4 +3,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  form {
+    display: flex;
+    flex-direction: column;
+
+    input {
+      margin-bottom: 1em;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9em;
+    }
+  }
 }
