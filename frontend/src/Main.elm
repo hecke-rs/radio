@@ -1,8 +1,11 @@
 module Main exposing (main)
 
 import Data.Session exposing (Session)
+import Elements.Page as Page
 import Html exposing (..)
 import Navigation exposing (Location)
+import Page.Home as Home
+import Page.Signin as Signin
 import Route exposing (Route)
 import Util exposing ((=>))
 
@@ -27,8 +30,8 @@ main =
 -}
 type Page
     = Blank
-    | Home
-    | Signin
+    | Home Home.Model
+    | Signin Signin.Model
     | NotFound -- essentially our 404 page
 
 
@@ -64,6 +67,8 @@ init location =
 -}
 type Msg
     = RouteTo (Maybe Route)
+    | HomeMsg Home.Msg
+    | SigninMsg Signin.Msg
 
 
 {-| Takes the current state and a message to process; returns a tuple of
@@ -71,11 +76,16 @@ the new state plus any commands we wish to dispatch.
 -}
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
+    case Debug.log "msg" msg of
         RouteTo route ->
             routeTo route model
 
+        _ ->
+            updatePage model.page msg model
 
+
+{-| Routes to a given route from the current state.
+-}
 routeTo : Maybe Route -> Model -> ( Model, Cmd Msg )
 routeTo route model =
     case route of
@@ -83,10 +93,29 @@ routeTo route model =
             { model | page = NotFound } => Cmd.none
 
         Just Route.Root ->
-            { model | page = Home } => Cmd.none
+            { model | page = Home Home.init } => Cmd.none
 
         Just Route.Signin ->
-            { model | page = Signin } => Cmd.none
+            { model | page = Signin Signin.init } => Cmd.none
+
+
+updatePage : Page -> Msg -> Model -> ( Model, Cmd Msg )
+updatePage page msg model =
+    case ( msg, page ) of
+        ( SigninMsg subMsg, Signin subModel ) ->
+            let
+                ( pageModel, cmd ) =
+                    Signin.update subMsg subModel
+            in
+            { model | page = Signin pageModel } => Cmd.map SigninMsg cmd
+
+        ( _, NotFound ) ->
+            -- disregard all messages when we're on the NotFound page
+            model => Cmd.none
+
+        ( _, _ ) ->
+            -- disregard messages that arrived for the wrong page
+            model => Cmd.none
 
 
 
@@ -116,11 +145,11 @@ viewPage session page =
             -- for the initial page load
             Html.text ""
 
-        Home ->
-            Html.text "hrrrnrngh"
+        Home subModel ->
+            Home.view session subModel |> Page.frame |> Html.map HomeMsg
+
+        Signin subModel ->
+            Signin.view session subModel |> Page.fullscreenFrame |> Html.map SigninMsg
 
         NotFound ->
             Html.text "we did a wittle fucko boingo"
-
-        Signin ->
-            Html.text "hrrng sign in"
