@@ -11,11 +11,13 @@
 
   boot.cleanTmpDir = true;
 
+  users.mutableUsers = true;
   users.extraUsers.admin = {
     uid = 1000;
     isNormalUser = true;
     extraGroups = [ "wheel" ];
     group = "users";
+    initialPassword = "funkitup";
 
     # wow such pubkey
     openssh.authorizedKeys.keys = [
