@@ -1,4 +1,5 @@
-{ ... }: {
+{ ... }:
+let radioPkgs = import ../../default.nix; in {
   imports = [
     ./hardware-configuration.nix
     ./networking.nix # generated at runtime by nixos-infect
@@ -17,6 +18,7 @@
   services.nginx.virtualHosts."radio.hecke.rs" = {
     enableACME = true;
     forceSSL = true;
+    root = "${radioPkgs.frontend}/";
   };
 
   users.mutableUsers = true;
