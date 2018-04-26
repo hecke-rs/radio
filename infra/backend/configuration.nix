@@ -1,5 +1,5 @@
 { ... }:
-let radioPkgs = import ../../default.nix; in {
+let radioPkgs = import ../../deploy/default.nix; in {
   imports = [
     ./hardware-configuration.nix
     ./networking.nix # generated at runtime by nixos-infect
