@@ -3,6 +3,7 @@ let radioPkgs = import ../../deploy/default.nix; in {
   imports = [
     ./hardware-configuration.nix
     ./networking.nix # generated at runtime by nixos-infect
+    ../../deploy/service.nix
   ];
 
   networking.hostName = "backend";
@@ -10,6 +11,8 @@ let radioPkgs = import ../../deploy/default.nix; in {
   networking.firewall.allowedTCPPorts = [ 80 443 ];
 
   services.openssh.enable = true;
+
+  services.radio.enable = true;
 
   services.nginx.enable = true;
   services.nginx.recommendedOptimisation = true;
