@@ -42,12 +42,12 @@ viewForm model =
     Html.form [ onSubmit SubmitForm ]
         [ span []
             [ label [ for "username" ] [ text "Username" ]
-            , textInput [ id "username", class "basic-slide", onInput SetUsername ] []
+            , textInput [ id "username", onInput SetUsername ] []
             , viewFieldErrors Username model.errors
             ]
         , span []
             [ label [ for "password" ] [ text "Password" ]
-            , passwordInput [ id "password", class "basic-slide", onInput SetPassword ] []
+            , passwordInput [ id "password", onInput SetPassword ] []
             , viewFieldErrors Password model.errors
             ]
         , button [ class "purple-lozenge" ]
