@@ -3,6 +3,7 @@ note this is the internal frontend ⇆ backend API (at least at the moment), not
 
 ## Authentication
 ### `POST /api/auth/users`
+register
 ```json
 {
     "username": string,
