@@ -104,10 +104,16 @@ updatePage page msg model =
     case ( msg, page ) of
         ( SigninMsg subMsg, Signin subModel ) ->
             let
-                ( pageModel, cmd ) =
+                ( ( pageModel, cmd ), extMsg ) =
                     Signin.update subMsg subModel
+
+                newModel = case extMsg of
+                    Signin.Nop -> model
+
+                    Signin.SetUser user -> {model | session = { user = Just user }}
+
             in
-            { model | page = Signin pageModel } => Cmd.map SigninMsg cmd
+            { newModel | page = Signin pageModel } => Cmd.map SigninMsg cmd
 
         ( _, NotFound ) ->
             -- disregard all messages when we're on the NotFound page

@@ -15,7 +15,16 @@ init =
 
 view : Session -> Model -> Html Msg
 view session model =
-    Html.text "foo"
+    let
+        text =
+            case session.user of
+                Just user ->
+                    "Just User : " ++ user.username
+
+                _ ->
+                    "Nothing"
+    in
+    Html.text text
 
 
 type Msg

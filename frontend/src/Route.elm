@@ -1,4 +1,4 @@
-module Route exposing (Route(..), fromLocation)
+module Route exposing (Route(..), fromLocation, modifyUrl)
 
 import Html exposing (Attribute)
 import Html.Attributes as Attr
@@ -41,3 +41,8 @@ asString page =
 href : Route -> Attribute msg
 href route =
     Attr.href ("#" ++ asString route)
+
+
+modifyUrl : Route -> Cmd msg
+modifyUrl =
+    asString >> Navigation.modifyUrl

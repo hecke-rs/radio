@@ -1,10 +1,15 @@
-module Page.Signin exposing (Model, Msg, init, update, view)
+module Page.Signin exposing (Model, Msg, OutMsg(..), init, update, view)
 
 import Data.Session exposing (Session)
+import Data.User as User exposing (User)
 import Elements.Form exposing (passwordInput, submit, textInput, viewFieldErrors)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Http
+import Json.Decode as Decode exposing (Decoder, decodeString, field, string)
+import Request.User
+import Route
 import Util exposing ((=>))
 import Validate exposing (Validator, ifBlank, validate)
 
@@ -40,7 +45,8 @@ view session model =
 viewForm : Model -> Html Msg
 viewForm model =
     Html.form [ onSubmit SubmitForm ]
-        [ span []
+        [ viewFieldErrors Form model.errors
+        , span []
             [ label [ for "username" ] [ text "Username" ]
             , textInput [ id "username", onInput SetUsername ] []
             , viewFieldErrors Username model.errors
@@ -63,24 +69,45 @@ type Msg
     = SubmitForm
     | SetUsername String
     | SetPassword String
+    | RequestCompleted (Result Http.Error User)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+type OutMsg
+    = Nop
+    | SetUser User
+
+
+update : Msg -> Model -> ( ( Model, Cmd Msg ), OutMsg )
 update msg model =
     case msg of
         SubmitForm ->
-            case Debug.log "validation" (validate modelValidator model) of
+            case validate modelValidator model of
                 [] ->
-                    model => Cmd.none
+                    { model | errors = [] } => Http.send RequestCompleted (Request.User.signIn model) => Nop
 
                 errors ->
-                    { model | errors = errors } => Cmd.none
+                    { model | errors = errors } => Cmd.none => Nop
 
         SetUsername username ->
-            { model | username = username } => Cmd.none
+            { model | username = username } => Cmd.none => Nop
 
         SetPassword password ->
-            { model | password = password } => Cmd.none
+            { model | password = password } => Cmd.none => Nop
+
+        RequestCompleted (Err error) ->
+            let
+                errorMessages =
+                    case error of
+                        Http.BadStatus resp ->
+                            resp.body |> decodeString (field "message" string) |> Result.map List.singleton |> Result.withDefault []
+
+                        _ ->
+                            [ "unable to perform login" ]
+            in
+            { model | errors = List.map (\msg -> ( Form, msg )) errorMessages } => Cmd.none => Nop
+
+        RequestCompleted (Ok user) ->
+            model => Route.modifyUrl Route.Root => SetUser user
 
 
 
@@ -88,7 +115,8 @@ update msg model =
 
 
 type Field
-    = Username
+    = Form -- errors applying to the whole form
+    | Username
     | Password
 
 
