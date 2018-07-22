@@ -14,11 +14,12 @@ def create_app(config_object):
     return app
 
 def register_extensions(app):
-    from .extensions import db, migrate, jwt
+    from .extensions import db, migrate, jwt, cors
 
     db.init_app(app)
     migrate.init_app(app)
     jwt.init_app(app)
+    cors.init_app(app)
 
 def register_exceptions(app):
     from .exceptions import APIError
