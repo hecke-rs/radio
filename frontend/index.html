@@ -7,7 +7,7 @@
   <body>
     <script src="app.js"></script>
     <script>
-      var app = Elm.Main.fullscreen();
+      var app = Elm.Main.fullscreen({token: localStorage.token || null});
     </script>
   </body>
 </html>

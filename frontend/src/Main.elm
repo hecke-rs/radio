@@ -1,20 +1,23 @@
 module Main exposing (main)
 
 import Data.Session exposing (Session)
+import Data.User exposing (User)
 import Elements.Page as Page
 import Html exposing (..)
+import Http
 import Navigation exposing (Location)
 import Page.Home as Home
 import Page.Signin as Signin
+import Request.User
 import Route exposing (Route)
 import Util exposing ((=>))
 
 
 {-| Initialize the whole application; called from Javascript.
 -}
-main : Program Never Model Msg
+main : Program Flags Model Msg
 main =
-    Navigation.program (RouteTo << Route.fromLocation)
+    Navigation.programWithFlags (RouteTo << Route.fromLocation)
         { init = init
         , view = view
         , update = update
@@ -49,14 +52,33 @@ initialPage =
     Blank
 
 
+type alias Flags =
+    { token : Maybe String
+    }
+
+
 {-| Initializes application state, variable over the current hashroute.
+
+Is additionally responsible for hydrating the user session - it fires a
+request to the "get user endpoint" if we currently have a token;
+that's later handled by the HydratedUser message.
+
 -}
-init : Location -> ( Model, Cmd Msg )
-init location =
-    routeTo (Route.fromLocation location)
-        { page = Blank
-        , session = { user = Nothing }
-        }
+init : Flags -> Location -> ( Model, Cmd Msg )
+init flags location =
+    let
+        ( model, cmd ) =
+            routeTo (Route.fromLocation location)
+                { page = Blank
+                , session = { user = Nothing }
+                }
+    in
+    case flags.token of
+        Just token ->
+            model => Cmd.batch [ cmd, Http.send HydratedUser <| Request.User.hydrate token ]
+
+        Nothing ->
+            model => cmd
 
 
 
@@ -67,6 +89,7 @@ init location =
 -}
 type Msg
     = RouteTo (Maybe Route)
+    | HydratedUser (Result Http.Error User)
     | HomeMsg Home.Msg
     | SigninMsg Signin.Msg
 
@@ -79,6 +102,10 @@ update msg model =
     case Debug.log "msg" msg of
         RouteTo route ->
             routeTo route model
+
+        HydratedUser (userResult) ->
+            -- just forget the session if we have any error
+            { model | session = { user = Result.toMaybe userResult } } => Cmd.none
 
         _ ->
             updatePage model.page msg model
@@ -107,11 +134,13 @@ updatePage page msg model =
                 ( ( pageModel, cmd ), extMsg ) =
                     Signin.update subMsg subModel
 
-                newModel = case extMsg of
-                    Signin.Nop -> model
+                newModel =
+                    case extMsg of
+                        Signin.Nop ->
+                            model
 
-                    Signin.SetUser user -> {model | session = { user = Just user }}
-
+                        Signin.SetUser user ->
+                            { model | session = { user = Just user } }
             in
             { newModel | page = Signin pageModel } => Cmd.map SigninMsg cmd
 
