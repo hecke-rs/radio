@@ -33,7 +33,7 @@ def signin_user(username, password, **kwargs):
     if user is not None and user.check_password(password):
         return user
     else:
-        raise APIError.user_not_found()
+        raise APIError.user_or_password_not_found()
 
 @bp.route('/api/auth/user', methods=['GET'])
 @serializes_to(UserSchema())

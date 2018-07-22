@@ -20,5 +20,5 @@ class APIError(Exception):
         return cls("User already registered", status_code=422)
 
     @classmethod
-    def user_not_found(cls):
-        return cls("User not found", status_code=401)
+    def user_or_password_not_found(cls):
+        return cls("User or password incorrect", status_code=401)
