@@ -21,4 +21,4 @@ class APIError(Exception):
 
     @classmethod
     def user_not_found(cls):
-        return cls("User not found", status_code=404)
+        return cls("User not found", status_code=401)
